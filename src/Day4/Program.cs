@@ -17,6 +17,9 @@ class Program
             total += card.CheckWinnings();
         }
 
-        Console.WriteLine($"Total {total}");
+        Console.WriteLine($"Part 1 Total {total}");
+
+        // part 2
+        Game.Part2(data);
     }
 }
