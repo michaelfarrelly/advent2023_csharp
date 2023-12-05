@@ -1,3 +1,6 @@
+
+using System.Runtime.InteropServices;
+
 namespace Day3;
 
 class Engine
@@ -75,6 +78,44 @@ class Engine
         return validParts;
     }
 
+
+    internal int ValidGears()
+    {
+        // after generate, run validParts
+        var gears = this.engineSymbols.Where(s => s.number == "*").ToList();
+        var validPartsAroundGears = this.parts.Where((part) =>
+        {
+            return this.isNear(part, gears);
+        }).ToList();
+
+        var partGearDetails = validPartsAroundGears.Select(part =>
+        {
+            return this.isNearDetails(part, gears);
+        });
+
+        var validGears = gears.Select((g) =>
+        {
+            var nearParts = partGearDetails.Where(p =>
+            {
+                return p.matchedSymbols.Contains(g);
+            });
+            if (nearParts.Count() == 2)
+            {
+                var partNumbs = nearParts.Select(p => int.Parse(p.part.number));
+
+                var total = 1;
+                foreach (var pn in partNumbs)
+                {
+                    total *= pn;
+                }
+                return total;
+            }
+            return 0;
+        }).Sum();
+
+        return validGears;
+    }
+
     private bool isNumChar(char char1)
     {
         return char1 >= '0' && char1 <= '9';
@@ -128,5 +169,57 @@ class Engine
             return true;
         }
         return false;
+    }
+
+    private (bool result, EnginePart part, List<EngineSymbol> matchedSymbols) isNearDetails(EnginePart part, List<EngineSymbol> symbols)
+    {
+        var partSize = part.number.Length;
+        // check part.x - 1, part.x + 1
+        var checkPositions = new List<(int x, int y)>
+        {
+            (part.x - 1, part.y),
+            (part.x + partSize , part.y)
+        };
+
+        for (var i = part.x - 1; i <= part.x + partSize; i++)
+        {
+            checkPositions.Add((i, part.y - 1));
+            checkPositions.Add((i, part.y + 1));
+        }
+
+        // Console.WriteLine($"cp {part.number} {partSize} {checkPositions.Count()}");
+        // foreach (var cp in checkPositions)
+        // {
+        //     Console.WriteLine($" + cp {cp.x},{cp.y}");
+        // }
+
+        var matches = symbols.Where((s) =>
+        {
+            foreach (var cp in checkPositions)
+            {
+                if (cp.x == s.x && cp.y == s.y)
+                {
+                    // Console.WriteLine($"cp-near {part.number} {s.number} {s.x}, {s.y}");
+                    return true;
+                }
+            }
+            // Console.WriteLine($"cp-fail {part.number} {s.number} {s.x}, {s.y}");
+            return false;
+        }).ToList();
+
+        if (matches.Count() > 0)
+        {
+            return (true, part, matches);
+        }
+        return (false, part, new List<EngineSymbol>());
+    }
+
+}
+
+class EngineGear
+{
+    public EngineGear()
+    {
+
     }
 }

@@ -20,9 +20,14 @@ class Program
             Console.WriteLine($"Found {p.number} {p.x} {p.y}");
         }
 
-        Console.WriteLine("ValidParts");
+        Console.WriteLine("Part1: ValidParts");
         var validParts = engine.ValidParts();
         Console.WriteLine($"Found {validParts.Count()}");
-        Console.WriteLine($"Sum {validParts.Sum((v) => int.Parse(v.number))}");
+        Console.WriteLine($"Part1: Sum {validParts.Sum((v) => int.Parse(v.number))}");
+
+        var validGears = engine.ValidGears();
+
+        Console.WriteLine($"Part2: Sum {validGears}");
+        // Console.WriteLine($"Part2: Sum {validGears.Sum((v) => int.Parse(v.number))}");
     }
 }
